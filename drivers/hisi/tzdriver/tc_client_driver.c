@@ -234,7 +234,7 @@ static char ca_hash[SHA256_DIGEST_LENTH] = {0x59, 0xc0, 0xd6, 0x84,
 					    0xc9, 0x24, 0x47, 0xf,
 					    0x77, 0x91, 0x61, 0x49,
 					   };
-static int usekey = 0;
+
 #define SYSTEM_SERVER "system_server"
 #define APK_64_PROCESS_PATH "/data/dalvik-cache/arm64/system@framework@boot.oat"
 #define APK_32_PROCESS_PATH "/data/dalvik-cache/arm/system@framework@boot.oat"
@@ -1249,11 +1249,6 @@ int TC_NS_OpenSession(TC_NS_DEV_File *dev_file, TC_NS_ClientContext *context)
 							0xD1, 0x97, 0x6C, 0x52, 0x34, 0xA2, 0xD2, 0x3D, 
 							0x82, 0x7D, 0x61, 0x0D, 0x18, 0x0F, 0x6A, 0xEE};
 
-	unsigned char berlin_keystore_hash[32] = { 0x58, 0xAD, 0x57, 0x78, 0x99, 0x02, 0xDC, 0x65, 
-							0x45, 0x5D, 0x72, 0x19, 0x09, 0x1F, 0x04, 0x99, 
-							0xF9, 0x0F, 0x28, 0x3A, 0x1C, 0x7C, 0x8E, 0x1E, 
-							0xA8, 0x4B, 0x24, 0x81, 0xCB, 0x4A, 0xAA, 0xCA };
-
 	unsigned char gatekeeper_hash[32] = {0x27, 0x1C, 0x74, 0xFC, 0xED, 0x6E, 0xE3, 0x81, 
 							0xFA, 0x3F, 0x4C, 0xC5, 0xCE, 0xD1, 0x87, 0xDA, 
 							0xF8, 0x31, 0x2F, 0xF0, 0xD9, 0x5C, 0x99, 0x1C, 
@@ -1345,12 +1340,8 @@ find_service:
 	if (strstr(dev_file->pkg_name, "fingerprint"))
 		memcpy(hash_buf, fingerprint_hash, MAX_SHA_256_SZ);
 
-	if (strstr(dev_file->pkg_name, "keymaster") || strstr(dev_file->pkg_name, "keystore")) {
-		if(usekey == 1)
-			memcpy(hash_buf, berlin_keystore_hash, MAX_SHA_256_SZ);
-		else
-			memcpy(hash_buf, keystore_hash, MAX_SHA_256_SZ);
-	}
+	if (strstr(dev_file->pkg_name, "keymaster") || strstr(dev_file->pkg_name, "keystore"))
+		memcpy(hash_buf, keystore_hash, MAX_SHA_256_SZ);
 
 	if (strstr(dev_file->pkg_name, "gatekeeper"))
 		memcpy(hash_buf, gatekeeper_hash, MAX_SHA_256_SZ);
@@ -2602,8 +2593,6 @@ static void tc_exit(void)
 		g_tee_shash_tfm = NULL;
 	}
 }
-
-module_param(usekey, int, 0644);
 
 MODULE_AUTHOR("q00209673");
 MODULE_DESCRIPTION("TrustCore ns-client driver");
