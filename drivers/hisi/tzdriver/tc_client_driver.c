@@ -235,6 +235,10 @@ static char ca_hash[SHA256_DIGEST_LENTH] = {0x59, 0xc0, 0xd6, 0x84,
 					    0x77, 0x91, 0x61, 0x49,
 					   };
 
+static char *fpkey = "";
+static char *kskey = "";
+static char *gkey = "";
+
 #define SYSTEM_SERVER "system_server"
 #define APK_64_PROCESS_PATH "/data/dalvik-cache/arm64/system@framework@boot.oat"
 #define APK_32_PROCESS_PATH "/data/dalvik-cache/arm/system@framework@boot.oat"
@@ -1239,20 +1243,6 @@ int TC_NS_OpenSession(TC_NS_DEV_File *dev_file, TC_NS_ClientContext *context)
 	TC_NS_Session *session = NULL;
 	uint8_t flags = TC_CALL_GLOBAL;
 	unsigned char *hash_buf;
-	unsigned char fingerprint_hash[32] = {0xAC, 0xEB, 0x01, 0x1B, 0x1D, 0x6A, 0xB2, 0x0F, 
-							0x63, 0xA7, 0x46, 0x02, 0x42, 0x80, 0x2C, 0x46,
-							0x18, 0x60, 0xA0, 0xB8, 0xEC, 0x90, 0xEA, 0xDD, 
-							0xF8, 0x1A, 0xE7, 0x83, 0xF6, 0x1E, 0x47, 0x83};
-
-	unsigned char keystore_hash[32] = {0xD4, 0x43, 0x5B, 0xE4, 0x56, 0xBB, 0x1D, 0xF0, 
-							0xDA, 0x27, 0x11, 0x45, 0xF1, 0x31, 0x50, 0xF9, 
-							0xD1, 0x97, 0x6C, 0x52, 0x34, 0xA2, 0xD2, 0x3D, 
-							0x82, 0x7D, 0x61, 0x0D, 0x18, 0x0F, 0x6A, 0xEE};
-
-	unsigned char gatekeeper_hash[32] = {0x27, 0x1C, 0x74, 0xFC, 0xED, 0x6E, 0xE3, 0x81, 
-							0xFA, 0x3F, 0x4C, 0xC5, 0xCE, 0xD1, 0x87, 0xDA, 
-							0xF8, 0x31, 0x2F, 0xF0, 0xD9, 0x5C, 0x99, 0x1C, 
-							0x68, 0x09, 0x3D, 0xF2, 0x7D, 0xAD, 0x30, 0x63};
 
 	if (!dev_file || !context) {
 		TCERR("invalid dev_file or context\n");
@@ -1338,15 +1328,14 @@ find_service:
 	}
 
 	if (strstr(dev_file->pkg_name, "fingerprint"))
-		memcpy(hash_buf, fingerprint_hash, MAX_SHA_256_SZ);
+		memcpy(hash_buf, fpkey, MAX_SHA_256_SZ);
 
-	if (strstr(dev_file->pkg_name, "keymaster") || strstr(dev_file->pkg_name, "keystore"))
-		memcpy(hash_buf, keystore_hash, MAX_SHA_256_SZ);
+	else if (strstr(dev_file->pkg_name, "keymaster") || strstr(dev_file->pkg_name, "keystore"))
+		memcpy(hash_buf, kskey, MAX_SHA_256_SZ);
 
-	if (strstr(dev_file->pkg_name, "gatekeeper"))
-		memcpy(hash_buf, gatekeeper_hash, MAX_SHA_256_SZ);
+	else if (strstr(dev_file->pkg_name, "gatekeeper"))
+		memcpy(hash_buf, gkey, MAX_SHA_256_SZ);
 		
-
 	mutex_lock(&g_tc_ns_dev_list.dev_lock);
 	/* use the lock to make sure the TA sessions cannot be concurrency opened */
 
@@ -2593,6 +2582,10 @@ static void tc_exit(void)
 		g_tee_shash_tfm = NULL;
 	}
 }
+
+module_param(fpkey, charp, 0644);
+module_param(kskey, charp, 0644);
+module_param(gkey, charp, 0644);
 
 MODULE_AUTHOR("q00209673");
 MODULE_DESCRIPTION("TrustCore ns-client driver");
