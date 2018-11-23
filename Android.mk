@@ -25,8 +25,8 @@ export BALONG_FAMA_FLAGS
 KERNEL_N_TARGET ?= vmlinux
 UT_EXTRA_CONFIG ?=
 
-DTS_AUTO_GENERATE:= $(ANDROID_BUILD_TOP)/kernel/$(LINUX_VERSION)/arch/arm64/boot/dts/auto-generate
-DTS_KERNEL_OUT:= $(ANDROID_BUILD_TOP)/out/target/product/$(TARGET_PRODUCT)/obj/KERNEL_OBJ/arch/arm64/boot/dts/auto-generate
+DTS_AUTO_GENERATE:= $(TOP)/kernel/$(LINUX_VERSION)/arch/arm64/boot/dts/auto-generate
+DTS_KERNEL_OUT:= $(TOP)/out/target/product/$(TARGET_PRODUCT)/obj/KERNEL_OBJ/arch/arm64/boot/dts/auto-generate
 
 HI3650_MODEM_DRV_DIR := $(shell pwd)/vendor/hisi/modem/drv/acore/kernel/drivers/hisi/modem/drv
 ifeq ($(wildcard $(HI3650_MODEM_DRV_DIR)),)
@@ -59,25 +59,25 @@ ifeq ($(ENG_DEBUG_VERSION),true)
 KERNEL_ENG_DEBUG_CONFIGFILE := $(KERNEL_ARCH_ARM_CONFIGS)/merge_hi6250_defconfig
 $(KERNEL_ENG_DEBUG_CONFIGFILE):$(KERNEL_COMMON_DEFCONFIG) $(wildcard $(KERNEL_ENG_DEBUG_CONFIGS)/*)
 	touch $(KERNEL_ENG_DEBUG_CONFIGFILE)
-	@$(INC_PLUS)$(ANDROID_BUILD_TOP)/device/hisi/customize/build_script/kernel-config.sh -f $(KERNEL_COMMON_DEFCONFIG) -d $(KERNEL_ENG_DEBUG_CONFIGS) -o $(KERNEL_ENG_DEBUG_CONFIGFILE)
+	@$(INC_PLUS)$(TOP)/device/hisi/customize/build_script/kernel-config.sh -f $(KERNEL_COMMON_DEFCONFIG) -d $(KERNEL_ENG_DEBUG_CONFIGS) -o $(KERNEL_ENG_DEBUG_CONFIGFILE)
 
 $(KERNEL_DEBUG_CONFIGFILE):$(KERNEL_ENG_DEBUG_CONFIGFILE) $(wildcard $(KERNEL_DEBUG_CONFIGS)/*)
 	touch $(KERNEL_DEBUG_CONFIGFILE)
-	@$(INC_PLUS)$(ANDROID_BUILD_TOP)/device/hisi/customize/build_script/kernel-config.sh -f $(KERNEL_ENG_DEBUG_CONFIGFILE) -d $(KERNEL_DEBUG_CONFIGS) -o $(KERNEL_DEBUG_CONFIGFILE)
+	@$(INC_PLUS)$(TOP)/device/hisi/customize/build_script/kernel-config.sh -f $(KERNEL_ENG_DEBUG_CONFIGFILE) -d $(KERNEL_DEBUG_CONFIGS) -o $(KERNEL_DEBUG_CONFIGFILE)
 else
 KERNEL_ENG_DEBUG_CONFIGFILE :=
 ifneq ($(TARGET_SANITIZER_MODE),)
 KERNEL_KASAN_CONFIGFILE := $(KERNEL_ARCH_ARM_CONFIGS)/hisi_$(TARGET_PRODUCT)_kasan_defconfig
 
 $(KERNEL_KASAN_CONFIGFILE):$(KERNEL_COMMON_DEFCONFIG) $(wildcard $(KERNEL_KASAN_CONFIGS)/*)
-	@$(INC_PLUS)$(ANDROID_BUILD_TOP)/device/hisi/customize/build_script/kernel-config.sh -f $(KERNEL_COMMON_DEFCONFIG) -d $(KERNEL_KASAN_CONFIGS) -o $(KERNEL_KASAN_CONFIGFILE)
+	@$(INC_PLUS)$(TOP)/device/hisi/customize/build_script/kernel-config.sh -f $(KERNEL_COMMON_DEFCONFIG) -d $(KERNEL_KASAN_CONFIGS) -o $(KERNEL_KASAN_CONFIGFILE)
 
 $(KERNEL_DEBUG_CONFIGFILE):$(KERNEL_KASAN_CONFIGFILE) $(wildcard $(KERNEL_DEBUG_CONFIGS)/*)
-	@$(INC_PLUS)$(ANDROID_BUILD_TOP)/device/hisi/customize/build_script/kernel-config.sh -f $(KERNEL_KASAN_CONFIGFILE) -d $(KERNEL_DEBUG_CONFIGS) -o $(KERNEL_DEBUG_CONFIGFILE)
+	@$(INC_PLUS)$(TOP)/device/hisi/customize/build_script/kernel-config.sh -f $(KERNEL_KASAN_CONFIGFILE) -d $(KERNEL_DEBUG_CONFIGS) -o $(KERNEL_DEBUG_CONFIGFILE)
 else
 KERNEL_KASAN_CONFIGFILE :=
 $(KERNEL_DEBUG_CONFIGFILE):$(KERNEL_COMMON_DEFCONFIG) $(wildcard $(KERNEL_DEBUG_CONFIGS)/*)
-	@$(INC_PLUS)$(ANDROID_BUILD_TOP)/device/hisi/customize/build_script/kernel-config.sh -f $(KERNEL_COMMON_DEFCONFIG) -d $(KERNEL_DEBUG_CONFIGS) -o $(KERNEL_DEBUG_CONFIGFILE)
+	@$(INC_PLUS)$(TOP)/device/hisi/customize/build_script/kernel-config.sh -f $(KERNEL_COMMON_DEFCONFIG) -d $(KERNEL_DEBUG_CONFIGS) -o $(KERNEL_DEBUG_CONFIGFILE)
 endif
 endif
 endif
