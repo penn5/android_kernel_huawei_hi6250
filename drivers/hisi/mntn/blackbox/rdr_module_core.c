@@ -333,6 +333,7 @@ u64 rdr_get_dump_result(u32 modid)
  */
 void rdr_notify_module_reset(u32 modid, struct rdr_exception_info_s *e_info)
 {
+#if 0
 	struct rdr_module_ops_s *p_module_ops = NULL;
 	struct list_head *cur = NULL;
 	struct list_head *next = NULL;
@@ -398,6 +399,7 @@ void rdr_notify_module_reset(u32 modid, struct rdr_exception_info_s *e_info)
 	spin_unlock_irqrestore(&__rdr_module_ops_list_lock, lock_flag);
 
 	BB_PRINT_END();
+#endif
 	return;
 }
 
