@@ -169,7 +169,12 @@ invalid_option:
 				       "Unrecognized mount option \"%s\" "
 				       "or missing value", p);
 			}
-			return -EINVAL;
+			/* Meticulus: Techically this version of sdcardfs doesn't work in pie or oreo but as a
+			 * dirty hack we can just ignore invalid options and allow sdcardfs to use defaults.
+			 * There may still be some permissions issues doing it that way but I'll work on that
+			 * later. "Why do now what you can do later" - Some lazy dude.
+			 * return -EINVAL;
+			 */
 		}
 	}
 
